@@ -1,0 +1,51 @@
+# Changelog
+
+## v6 — 2026-05-19 — Retrieval tools
+
+**Added**
+- `/recall <query>` slash command — hybrid search (BM25 + GGUF embeddings + LLM rerank) over all memory files, backed by [qmd](https://github.com/tobi/qmd)
+- `/codemap def|callers|callees|outline <symbol>` — on-demand symbol map for the current repo via universal-ctags + ripgrep; cache in `<repo>/.codemap.tags`
+- `/memory status | auto on|off | refresh` — protocol controls and optional auto-capture toggle (off by default)
+- `bin/codemap.sh` — portable ctags+rg wrapper, self-locates binaries on Windows (winget paths) / macOS (brew) / Linux (apt)
+- SessionStart hook now auto-refreshes the qmd retrieval index in background, debounced 6h
+
+**Changed**
+- Knowledge store organization: flat-only rule softened to allow shallow (1-level) folder grouping when a category has 5+ peer files — `protocols/`, `formats/`, `handoffs/` OK; deeper nesting still forbidden. Obsidian tags continue to do the primary categorization.
+- Karpathy "LLM-OS" framing added to CLAUDE.md (context = RAM, file system = disk, tools = peripherals)
+
+## v5 — 2026-05-13 — Knowledge store conventions
+
+**Added**
+- "Knowledge store organization" section in CLAUDE.md codifying flat + tags + filename-prefix conventions (`protocol_<name>.md`, `format_<name>.md`, `handoff_<topic>.md`)
+- `index.md` as the routing source for multi-file knowledge stores
+- `raw/` subdirectory convention for non-markdown data dumps
+- Rule for when to split single `project.md` into multi-file (>200 lines, ≥3 distinct categories, or cross-file refs needed)
+
+## v4 — 2026-05-07 — In-repo L1 pivot
+
+**Changed**
+- L1 split into **L1a** (`<repo>/CLAUDE.md`, thin entry, git-tracked, auto-loaded) + **L1b** (`<repo>/.claude-docs/*.md`, thick lazy-loaded, git-tracked)
+- Old account-local `project.md` renamed to **L1-fallback** for repos where in-repo isn't appropriate
+- Adopted "midnight server agent test" as the explicit decision rule for layer placement
+- Added templates: `templates/repo/CLAUDE.md`, `templates/repo/.claude-docs/{index,gotchas,architecture,conventions}.md`
+
+## v3 — 2026-05-07 — Obsidian compatibility
+
+**Changed**
+- HTML-comment `<!-- last_updated: ... -->` migrated to YAML frontmatter with `tags: [memory/l0|l1|l2|repo, ...]`
+- StalenessHook regex stays compatible with both formats — no migration needed for existing files
+
+## v2 — 2026-05-05 — Workflow patterns + L1 templates
+
+**Added**
+- Workflow patterns: pre-compact checkpoint, post-compact recovery, multi-session handoff, distillation on task wrap-up, bootstrapping in-repo L1
+- L1-fallback template with structured sections (Repository, Layout, Stack, Endpoints, Conventions, Known gotchas, Roadmap)
+- Rule: "L1 is where grabli live" — non-obvious footguns are the highest-leverage memory
+
+## v1 — 2026-05-05 — Staleness detection + portability
+
+**Added**
+- `bin/session-start.sh` staleness check: if `SESSION.md` is >24h old, the hook injects a STALENESS WARNING so the model surfaces it to the user before silently continuing
+- Portable hooks (use `$HOME`/`$CLAUDE_HOME` instead of hardcoded paths)
+- `templates/` directory with separate `IDENTITY.md`, `project.md` templates for new installs
+- Friend-shareable zip packaging

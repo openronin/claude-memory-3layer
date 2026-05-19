@@ -1,0 +1,70 @@
+---
+tags: [memory/l1, project]
+project: <NAME>
+---
+
+# Project: <NAME>
+
+<!-- L1 layer. Loaded on every session start for this project (cwd-derived slug).
+     Lives at ~/.claude/projects/<slug>/memory/project.md
+     This file persists across sessions. Promote into it ONLY on explicit "remember/запомни".
+     Highest-leverage section is "Known gotchas" — fill it as you discover non-obvious foot-guns. -->
+
+<1-2 line elevator pitch — what this project is and why it exists>
+
+## Repository
+
+- GitHub/GitLab: <url>
+- Push/pull command (only if non-default SSH key needed):
+  `GIT_SSH_COMMAND="ssh -i <path> -o StrictHostKeyChecking=no" git ...`
+- Local working dir: <path> (= repo root | submodule of X)
+- Default branch: <main|master|...>
+
+## Layout
+
+- `<path>` — <what it is>
+- `<path>` — <what it is>
+
+## Stack
+
+- Language/runtime: <e.g. PHP 7.4, Node 20, Python 3.11>
+- Framework(s): <e.g. mpcmf, FastAPI, Next.js>
+- Storage: <e.g. MongoDB, Postgres, Redis>
+- External services: <APIs the project talks to>
+- Build/deploy: <how it ships>
+
+## Endpoints / credentials
+
+<!-- Reference only — never paste actual tokens. Point at the env var or path. -->
+
+- <Service>: host `<host>`, override env `<VAR_NAME>`
+- <Service>: token in env `<VAR_NAME>` or `<wherever>`
+
+## Conventions
+
+- <Language-specific dos/donts, naming rules, commit-msg style, etc.>
+- <Codebase-specific patterns: how configs are laid out, how modules are registered, etc.>
+
+## Known gotchas / Известные грабли
+
+<!-- THIS IS THE HIGHEST-LEVERAGE SECTION. Every non-obvious foot-gun goes here.
+     Future you will hit the same wall and want a one-line warning.
+     Tag individual items with #gotcha if you want Obsidian-side filtering. -->
+
+1. <gotcha> — <one-line how to avoid / what to do>
+2. ...
+
+## Reference codebase (if any)
+
+- `<path>` — <old/related project we draw ideas or code from>
+
+## Roadmap
+
+- [done] <milestone>
+- [todo] <milestone>
+
+<!-- Optional sections to add when relevant:
+     ## Domain knowledge — non-obvious data shapes, business rules
+     ## Real-world metrics — last successful E2E numbers (cost, wall, success rate)
+     ## Operations — how to restart/reset, where logs live
+-->
