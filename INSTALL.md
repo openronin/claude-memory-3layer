@@ -33,7 +33,47 @@ The killer move: **gotchas in L1b** + **verbatim Recent turns in L2**. Future se
 - **GNU `date`** — needed for `date -d <ISO>`. macOS `/usr/bin/date` is BSD and won't work; install `coreutils` (`brew install coreutils`) and ensure `gdate`/`date` from coreutils is on PATH, OR replace `date -d` calls in `session-start.sh` with `gdate -d`.
 - `grep -oE`, `sed` — present everywhere
 
-## Install
+## Install (or upgrade)
+
+**Easiest:** run the bundled `install.sh`. It detects first-install vs upgrade, backs up changed files with `.bak-<timestamp>`, NEVER overwrites your `IDENTITY.md` (L0 user data) or `projects/` tree (L1-fallback + L2 session memory), and prints settings.json merge instructions instead of blindly clobbering hook config.
+
+```bash
+unzip claude-memory-3layer-v*.zip -d cm-pkg && cd cm-pkg
+
+./install.sh --dry-run   # see what would change, write nothing
+./install.sh             # do it
+```
+
+The script writes everything under `$CLAUDE_HOME` (defaults to `~/.claude`). Manual install instructions below if you prefer step-by-step or are on a system without bash.
+
+### What the installer preserves vs replaces
+
+| File / dir | Behaviour |
+|---|---|
+| `~/.claude/memory/IDENTITY.md` | **Preserved if exists.** Template installed as `IDENTITY.template.md` alongside, for reference. |
+| `~/.claude/projects/` | **Never touched.** Your `SESSION.md` + `project.md` + `legacy/` stay as-is. |
+| `~/.claude/CLAUDE.md` | Replaced, `.bak-<ts>` backup if content differs. |
+| `~/.claude/hooks/*.sh` | Replaced, `.bak-<ts>` backup if content differs. |
+| `~/.claude/commands/{recall,memory,codemap}.md` | Replaced, `.bak-<ts>` backup if content differs. (Your own `task.md`/etc. untouched.) |
+| `~/.claude/settings.json` | Never auto-merged. Created fresh if absent. If exists without our hooks, you're told to merge by hand. |
+| `~/.cache/qmd/`, `<repo>/.codemap.tags` | Never touched. They're caches, rebuilt on demand. |
+
+### Rollback
+
+Each install pass tags backups with the same timestamp. To restore a previous run:
+
+```bash
+TS=20260519-181949   # whatever the installer printed
+for f in ~/.claude/**/*.bak-$TS; do mv "$f" "${f%.bak-$TS}"; done
+```
+
+### Format compatibility with older installs
+
+`SESSION.md` and `project.md` files written by earlier versions of this protocol use HTML comments (`<!-- last_updated: ISO -->`) for the staleness marker. The hook's regex accepts both the legacy HTML-comment form and the new YAML frontmatter. **No migration required** — old files keep working immediately. Convert at your own pace when editing them.
+
+Old account-local files from the pre-2026-04-30 system (`MEMORY.md`, `feedback_*.md`, `project_*.md`, `reference_*.md`) are ignored by the new hook — they sit harmlessly on disk. Either delete them, move them to a `legacy/` subdirectory for archival, or promote the contents into the current `project.md` (L1-fallback) format.
+
+## Manual install (alternative to `install.sh`)
 
 Assuming you unzipped this archive to some folder (call it `<pkg>`):
 
@@ -43,7 +83,8 @@ Assuming you unzipped this archive to some folder (call it `<pkg>`):
 mkdir -p ~/.claude/hooks ~/.claude/memory ~/.claude/debug
 
 cp <pkg>/CLAUDE.md                  ~/.claude/CLAUDE.md
-cp <pkg>/memory/IDENTITY.md         ~/.claude/memory/IDENTITY.md
+# ⚠ IDENTITY.md: only copy if FIRST install — overwriting existing one loses your data
+[ ! -f ~/.claude/memory/IDENTITY.md ] && cp <pkg>/memory/IDENTITY.md ~/.claude/memory/IDENTITY.md
 cp <pkg>/hooks/session-start.sh     ~/.claude/hooks/session-start.sh
 cp <pkg>/hooks/pre-compact.sh       ~/.claude/hooks/pre-compact.sh
 chmod +x ~/.claude/hooks/*.sh
