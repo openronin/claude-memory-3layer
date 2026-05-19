@@ -69,9 +69,29 @@ for f in ~/.claude/**/*.bak-$TS; do mv "$f" "${f%.bak-$TS}"; done
 
 ### Format compatibility with older installs
 
-`SESSION.md` and `project.md` files written by earlier versions of this protocol use HTML comments (`<!-- last_updated: ISO -->`) for the staleness marker. The hook's regex accepts both the legacy HTML-comment form and the new YAML frontmatter. **No migration required** — old files keep working immediately. Convert at your own pace when editing them.
+`SESSION.md` and `project.md` files written by earlier versions of this protocol use HTML comments (`<!-- last_updated: ISO -->`) for the staleness marker. The hook's regex accepts both the legacy HTML-comment form and the new YAML frontmatter. **No migration required** — old files keep working immediately.
 
-Old account-local files from the pre-2026-04-30 system (`MEMORY.md`, `feedback_*.md`, `project_*.md`, `reference_*.md`) are ignored by the new hook — they sit harmlessly on disk. Either delete them, move them to a `legacy/` subdirectory for archival, or promote the contents into the current `project.md` (L1-fallback) format.
+Old account-local files from the pre-2026-04-30 system (`MEMORY.md`, `feedback_*.md`, `project_*.md`, `reference_*.md`) are ignored by the new hook — they sit harmlessly on disk.
+
+### Migrating older data (optional but recommended)
+
+Two migration paths, both shipped in the package:
+
+**Mechanical (no AI needed) — `migrate.sh`** handles HTML-comment `last_updated` → YAML frontmatter, with backup. Auto-detects pre-2026-04-30 legacy directories and prints guidance for the next step.
+
+```bash
+./migrate.sh --dry-run   # preview
+./migrate.sh             # apply (writes .bak-<ts> for each touched file)
+```
+
+**Smart synthesis — `/migrate-legacy-memory` slash command** (requires Claude Code session). Spawns an Agent that reads each legacy directory, synthesizes a single new-format `project.md` per project preserving verbatim technical details (reviewer quotes, exact paths, error messages), and moves originals into `<slug>/memory/legacy/` as backup.
+
+```
+# In any Claude Code session:
+/migrate-legacy-memory
+```
+
+The slash command is non-destructive: only `mv` to `legacy/`, never `rm`. Skips projects that already have new-format `project.md`. Safe to re-run.
 
 ## Manual install (alternative to `install.sh`)
 
