@@ -248,6 +248,7 @@ You get:
 - **`/recall <query>`** — hybrid search across all memory layers (qmd-backed)
 - **`/codemap def|callers|callees|outline <symbol>`** — on-demand symbol queries in cwd repo (ctags+ripgrep)
 - **`/memory status | auto on|off | refresh`** — protocol controls; `/memory auto on` flips this session into auto-capture mode (model writes observations without waiting for explicit "запомни")
+- **`/memstat [--watch]`** — "task manager" for the memory subsystem: running qmd/ctags processes, index progress (vectors vs pending), refresh schedule, and a stall/health check. Use when `node.exe` is eating CPU and you want to see what it's doing.
 
 ## Growing the knowledge store (flat + tags + prefixes)
 

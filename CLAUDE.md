@@ -244,6 +244,8 @@ Three tools available via slash commands:
 
 - **`/memory status | auto on|off | refresh`** — protocol controls. `auto on` flips THIS session into auto-capture mode (model writes observations to SESSION.md / gotchas without waiting for "запомни"); `auto off` returns to default explicit-promotion. `refresh` forces qmd index rebuild.
 
+- **`/memstat [--watch]`** — "task manager" for the memory subsystem. Shows running qmd/ctags processes (PID, RAM, runtime), index progress (vectors embedded vs pending, % coverage), refresh schedule, recent log activity, and a stall/health check (samples vector delta to confirm a running embed is making progress). Use when `node.exe` is eating CPU and you want to know what it's doing / whether it hung.
+
 The auto-refresh of `/recall`'s index runs in background on every SessionStart (debounced 6h). `/codemap`'s tags rebuild on demand if stale. No daemons.
 
 **When to reach for which:**

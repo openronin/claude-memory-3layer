@@ -1,5 +1,17 @@
 # Changelog
 
+## v6.2.0 — 2026-05-21 — Memory dispatcher
+
+**Added**
+- `bin/memstat.sh` + `/memstat` slash command — a "task manager" for the memory subsystem. Shows:
+  - **Processes** — running qmd/ctags processes with PID, RAM, runtime (yellow flag if >30min)
+  - **Index** — vectors embedded vs pending, % coverage, per-collection file counts
+  - **Refresh** — when the SessionStart hook last refreshed, whether next auto-refresh is due (6h debounce)
+  - **Activity** — last line + age of each qmd log
+  - **Health** — if an embed is running, samples vector delta over 3s to confirm forward progress; flags possible stall (>2min running, 0 delta) with the PID to kill
+  - `--watch [seconds]` for a live auto-refreshing view
+- Answers the recurring "why is node.exe eating my CPU and is it stuck?" question. The CPU spikes are the background `qmd embed` launched by the SessionStart hook (6h debounce); on machines without working GPU acceleration it runs CPU-only (~1-3s/chunk, ~30min full re-embed).
+
 ## v6.1.0 — 2026-05-19 — Migration tools
 
 **Added**
