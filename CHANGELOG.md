@@ -1,5 +1,12 @@
 # Changelog
 
+## v6.2.1 — 2026-05-21 — Hook does FTS-only refresh (no surprise CPU)
+
+**Changed**
+- SessionStart hook now runs **only** the lightweight `qmd update` (BM25/FTS rebuild, seconds) in its 6h-debounced background refresh. The heavy `qmd embed` (CPU-bound GGUF vector generation, minutes-long) is **no longer auto-run** — it's manual via `/memory refresh`.
+- Rationale: on machines without working GPU acceleration, the background embed pegged CPU for ~30min and surprised users. BM25 (the `/recall` default) doesn't need vectors, so FTS-only auto-refresh keeps search fresh without the CPU cost. Run `/memory refresh` (or `/recall --hybrid` workflows) when you actually want fresh vectors.
+- Removed `QMD_LLAMA_GPU` export from the hook (no longer loads models in background).
+
 ## v6.2.0 — 2026-05-21 — Memory dispatcher
 
 **Added**

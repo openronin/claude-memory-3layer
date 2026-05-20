@@ -246,7 +246,7 @@ Three tools available via slash commands:
 
 - **`/memstat [--watch]`** — "task manager" for the memory subsystem. Shows running qmd/ctags processes (PID, RAM, runtime), index progress (vectors embedded vs pending, % coverage), refresh schedule, recent log activity, and a stall/health check (samples vector delta to confirm a running embed is making progress). Use when `node.exe` is eating CPU and you want to know what it's doing / whether it hung.
 
-The auto-refresh of `/recall`'s index runs in background on every SessionStart (debounced 6h). `/codemap`'s tags rebuild on demand if stale. No daemons.
+The SessionStart hook auto-refreshes only the lightweight FTS/BM25 index (`qmd update`) in background, debounced 6h. The heavy vector step (`qmd embed`, CPU-bound minutes-long GGUF inference) is **manual only** — run `/memory refresh` when you want fresh vectors for `/recall --hybrid`. BM25 (the `/recall` default) doesn't need vectors. `/codemap`'s tags rebuild on demand if stale. No daemons.
 
 **When to reach for which:**
 - Knowledge / notes / past decisions → `/recall`

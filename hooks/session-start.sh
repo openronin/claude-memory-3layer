@@ -7,11 +7,16 @@ echo "[$(date -Iseconds)] SessionStart fired (cwd=$PWD)" >> /c/Users/greev/.clau
 CLAUDE_HOME="${CLAUDE_HOME:-$HOME/.claude}"
 mkdir -p "$CLAUDE_HOME/debug" "$CLAUDE_HOME/logs" 2>/dev/null
 
-# --- qmd retrieval index auto-refresh (debounced, background) ---
-# Runs qmd update + embed in background if last refresh was >6h ago, or if
-# explicitly forced via QMD_FORCE_REFRESH=1. Cheap when index is fresh
-# (qmd skips unchanged hashes). Does not block hook output.
+# --- qmd FTS index auto-refresh (debounced, background) ---
+# Runs ONLY the lightweight `qmd update` (BM25/FTS rebuild) in background if
+# last refresh was >6h ago, or if forced via QMD_FORCE_REFRESH=1. Cheap and
+# fast — qmd skips unchanged hashes. Does NOT block hook output.
 # Requires qmd installed (see INSTALL.md). Silently skipped if not present.
+#
+# `qmd embed` (heavy GGUF vector generation, CPU-bound, minutes-long) is NOT
+# run here on purpose — it's manual via `/memory refresh`. This keeps the
+# background node process from surprising you with CPU spikes. BM25 search
+# (the /recall default) works fine without fresh vectors.
 qmd_marker="$CLAUDE_HOME/.qmd-last-refresh"
 qmd_refresh_needed=1
 if [[ -f "$qmd_marker" ]]; then
@@ -29,10 +34,8 @@ if [[ "$qmd_refresh_needed" == "1" ]]; then
       [[ -d "$p" ]] && PATH="$p:$PATH"
     done
     export PATH
-    export QMD_LLAMA_GPU="${QMD_LLAMA_GPU:-none}"
     if command -v qmd >/dev/null 2>&1; then
       qmd update >> "$CLAUDE_HOME/logs/qmd-refresh.log" 2>&1 \
-        && qmd embed >> "$CLAUDE_HOME/logs/qmd-refresh.log" 2>&1 \
         && date +%s > "$qmd_marker"
     fi
   ) &
