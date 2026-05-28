@@ -197,7 +197,17 @@ These tools let the model recall things across memory and query code structure w
 winget install OpenJS.NodeJS.LTS   # Windows
 # brew install node                # macOS
 # apt install nodejs npm           # Linux (need 18+; may need NodeSource)
+```
 
+> **nvm users (Linux/macOS):** nvm injects `node` into PATH via `~/.bashrc`, but Claude Code's `Bash` tool runs a **non-interactive** shell that does not source `~/.bashrc`. Even if `node --version` works in your terminal, `qmd` (which uses `#!/usr/bin/env node`) will fail with `node: not found` inside Claude Code sessions. Fix: drop stable symlinks into a directory that is unconditionally on PATH (e.g. `~/.local/bin`):
+> ```bash
+> ln -sf "$NVM_BIN/node" ~/.local/bin/node
+> ln -sf "$NVM_BIN/npm"  ~/.local/bin/npm
+> ln -sf "$NVM_BIN/npx"  ~/.local/bin/npx
+> ```
+> `~/.local/bin` is on PATH by default on most modern Linux distros (Ubuntu 17.10+, Fedora, Arch). Verify with `echo $PATH | tr : '\n' | grep local`. Alternatively, install Node system-wide via [NodeSource](https://github.com/nodesource/distributions) (`curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo bash - && sudo apt install -y nodejs`) to avoid the issue entirely.
+
+```bash
 npm install -g @tobilu/qmd
 
 # Configure collections for memory files
@@ -308,6 +318,13 @@ Conventions kept compatible:
 
 ## Troubleshooting
 
+- **`node: not found` (nvm users).** Claude Code's `Bash` tool runs a non-interactive shell that does not source `~/.bashrc`, so nvm's PATH injection is invisible even though `node --version` works in your terminal. Fix: create stable symlinks in a directory unconditionally on PATH:
+  ```bash
+  ln -sf "$NVM_BIN/node" ~/.local/bin/node
+  ln -sf "$NVM_BIN/npm"  ~/.local/bin/npm
+  ln -sf "$NVM_BIN/npx"  ~/.local/bin/npx
+  ```
+  Or install Node system-wide via [NodeSource](https://github.com/nodesource/distributions) to avoid the issue entirely. See the note in the `qmd` install section above.
 - **Hooks don't fire.** Check `~/.claude/debug/hook-trace.log` after starting a session. Empty? `settings.json` malformed (`python -m json.tool < ~/.claude/settings.json`) or path wrong. Use `~/` not `$HOME` in the JSON — Claude Code expands tilde.
 - **macOS: `date: illegal option -- d`.** You're using BSD `date`. `brew install coreutils` and either prepend its bin to PATH or replace `date -d` with `gdate -d` in `session-start.sh`.
 - **Slug looks wrong.** The hook computes it from `$PWD` in unix form (`/c/dev/foo`). On Windows, Git Bash gives this naturally. If you see `C--dev--foo` (double dash mid-path) you're running an older draft — the line should read `slug="${drive}--${rest//\//-}"` (single dash inside the path).
