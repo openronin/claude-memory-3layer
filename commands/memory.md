@@ -22,8 +22,6 @@ Manage memory protocol behaviour. Default is **explicit-promotion** mode (user m
 
 4. For **`refresh`**: `qmd update && qmd embed`. Report counts (`N new, M updated`).
 
-PATH note: prepend `export PATH="/c/Program Files/nodejs:/c/Users/greev/AppData/Roaming/npm:$PATH" &&` to qmd commands if needed.
-
 ## Behaviour when auto-capture is ON (model must follow)
 
 - After any non-trivial decision: write 1-line entry to SESSION.md `# Decisions` with rationale.
@@ -35,3 +33,10 @@ PATH note: prepend `export PATH="/c/Program Files/nodejs:/c/Users/greev/AppData/
 ## Check-this rule
 
 At the start of EVERY response, check `~/.claude/.memory-auto`. If present, follow auto-capture behaviour. If absent, follow default (explicit-promotion). This check is cheap (one stat call) and ensures the toggle takes effect immediately within the session.
+
+## Windows-only troubleshooting
+
+If `qmd` is not on PATH (Git Bash / Windows), prepend to qmd commands:
+```bash
+export PATH="/c/Program Files/nodejs:/c/Users/$USERNAME/AppData/Roaming/npm:$PATH"
+```

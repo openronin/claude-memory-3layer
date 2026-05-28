@@ -14,7 +14,7 @@ Use when: you see `node.exe` eating CPU and want to know what it's doing, whethe
 
 Run via Bash:
 ```bash
-bash /c/Users/greev/.claude/bin/memstat.sh
+bash ~/.claude/bin/memstat.sh
 ```
 For watch mode, append `--watch [seconds]`. (In a non-interactive context, prefer the one-shot form — watch never returns.)
 

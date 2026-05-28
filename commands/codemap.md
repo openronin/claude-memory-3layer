@@ -15,7 +15,7 @@ Tree-sitter-ish symbol queries (definitions, callers, callees, outline) via univ
 Run via Bash from the user's current cwd (do NOT cd):
 
 ```bash
-bash /c/Users/greev/.claude/bin/codemap.sh <subcmd> [arg]
+bash ~/.claude/bin/codemap.sh <subcmd> [arg]
 ```
 
 Output is plain text — pass through verbatim, then add one short orientation line ("found 3 callers across `<repo>/src/`", or "definition is in `<file>:<line>`, want me to read it?").

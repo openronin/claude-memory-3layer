@@ -15,11 +15,7 @@ Optional flags:
 
 ## How to execute
 
-1. Run via Bash. PATH augmentation if qmd not on PATH:
-   ```bash
-   export PATH="/c/Program Files/nodejs:/c/Users/greev/AppData/Roaming/npm:$PATH"
-   export QMD_LLAMA_GPU=none   # Windows: Vulkan default crashes on some GPUs
-   ```
+1. Run via Bash.
 
 2. **BM25 default** (no `--hybrid` flag):
    ```bash
@@ -55,3 +51,11 @@ Optional flags:
 
 - **BM25 default is enough 80% of the time** — your memory files contain the exact terminology you're searching for ("MongoDB", "Vulkan", "Kubernetes ingress"). BM25 wins on speed + zero loading cost.
 - **Use `--hybrid`** for semantic queries where you don't remember the exact words ("that thing about DNS resolution failures", "the gotcha with timezone handling").
+
+## Windows-only troubleshooting
+
+If `qmd` is not on PATH (Git Bash / Windows), prepend:
+```bash
+export PATH="/c/Program Files/nodejs:/c/Users/$USERNAME/AppData/Roaming/npm:$PATH"
+export QMD_LLAMA_GPU=none   # Vulkan default crashes on some AMD/Intel GPUs
+```
