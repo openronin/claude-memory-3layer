@@ -64,12 +64,9 @@ fi
 
 say "Protocol + tools:"
 backup_and_install "$SRC/CLAUDE.md"                "$CLAUDE_HOME/CLAUDE.md"
-backup_and_install "$SRC/hooks/session-start.sh"   "$CLAUDE_HOME/hooks/session-start.sh"
-backup_and_install "$SRC/hooks/pre-compact.sh"     "$CLAUDE_HOME/hooks/pre-compact.sh"
-backup_and_install "$SRC/commands/recall.md"       "$CLAUDE_HOME/commands/recall.md"
-backup_and_install "$SRC/commands/codemap.md"      "$CLAUDE_HOME/commands/codemap.md"
-backup_and_install "$SRC/commands/memory.md"       "$CLAUDE_HOME/commands/memory.md"
-backup_and_install "$SRC/bin/codemap.sh"           "$CLAUDE_HOME/bin/codemap.sh"
+for f in "$SRC/hooks/"*.sh;     do backup_and_install "$f" "$CLAUDE_HOME/hooks/$(basename "$f")";    done
+for f in "$SRC/commands/"*.md;  do backup_and_install "$f" "$CLAUDE_HOME/commands/$(basename "$f")"; done
+for f in "$SRC/bin/"*.sh;       do backup_and_install "$f" "$CLAUDE_HOME/bin/$(basename "$f")";      done
 
 if [[ $DRY_RUN -eq 0 ]]; then
   chmod +x "$CLAUDE_HOME/hooks/"*.sh "$CLAUDE_HOME/bin/"*.sh 2>/dev/null || true
